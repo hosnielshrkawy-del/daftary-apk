@@ -65,9 +65,12 @@ jobs:
 
       - name: Sign APK
         working-directory: android
+        env:
+          KS_PASS: ${{ secrets.DAFTARY_KS_PASS }}
+          KEY_PASS: ${{ secrets.DAFTARY_KEY_PASS }}
         run: |
           BUILD_TOOLS=$ANDROID_SDK_ROOT/build-tools/34.0.0
-          $BUILD_TOOLS/apksigner sign --ks my-release-key.keystore --ks-key-alias daftary_key --ks-pass pass:${{ secrets.DAFTARY_KS_PASS }} --key-pass pass:${{ secrets.DAFTARY_KEY_PASS }} --out Daftary-Final.apk Daftary-aligned.apk
+          $BUILD_TOOLS/apksigner sign --ks my-release-key.keystore --ks-key-alias daftary_key --ks-pass pass:"$KS_PASS" --key-pass pass:"$KEY_PASS" --out Daftary-Final.apk Daftary-aligned.apk
 
       - name: Clean up keystore from workspace
         working-directory: android

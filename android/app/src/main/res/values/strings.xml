@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Daftary</string>
+    <string name="title_activity_main">Daftary</string>
+    <string name="package_name">com.daftar.app</string>
+    <string name="custom_url_scheme">com.daftar.app</string>
+</resources>

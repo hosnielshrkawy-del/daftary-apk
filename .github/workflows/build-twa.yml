@@ -1,101 +1,51 @@
-name: Build TWA APK
+name: Build Android TWA
 
 on:
-  workflow_dispatch:
   push:
-    paths:
-      - "twa/**"
-      - "public/.well-known/**"
-      - ".github/workflows/build-twa.yml"
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: "21"
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Set up Node 22
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: '20'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
 
-      - name: Install SDK components
-        run: sdkmanager --install "platform-tools" "build-tools;34.0.0" "platforms;android-34"
-
-      - name: Install Bubblewrap
-        run: npm i -g @bubblewrap/cli
-
-      - name: Write Bubblewrap config
-        run: |
-          mkdir -p "$HOME/.bubblewrap"
-          printf '{"jdkPath":"%s","androidSdkPath":"%s"}\n' "$JAVA_HOME" "$ANDROID_SDK_ROOT" > "$HOME/.bubblewrap/config.json"
-
-      - name: Point TWA host at live PWA
+      - name: Generate Keystore and Patch Manifest
         working-directory: twa
-        env:
-          PWA_HOST: ${{ secrets.PWA_HOST }}
         run: |
-          HOST="${PWA_HOST:-daftary-apk.vercel.app}"
-          HOST="${HOST#https://}"
-          HOST="${HOST%/}"
-          export HOST
+          keytool -genkeypair -v -keystore android.keystore -alias android -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Daftary, OU=Dev, O=Daftary, L=Cairo, ST=Cairo, C=EG"
           node -e '
             const fs = require("fs");
-            const host = process.env.HOST;
-            const m = JSON.parse(fs.readFileSync("twa-manifest.json","utf8"));
-            const origin = "https://" + host;
-            m.host = host;
-            m.iconUrl = origin + "/__grok/icon-512.png";
-            m.maskableIconUrl = origin + "/__grok/icon-512.png";
-            m.monochromeIconUrl = origin + "/__grok/icon-192.png";
-            m.webManifestUrl = origin + "/__grok/manifest.webmanifest";
-            m.fullScopeUrl = origin + "/";
-            m.keyStore = m.keyStore || { path: "android.keystore", alias: "android" };; m.keyStore = m.keyStore || { path: "android.keystore", alias: "android" }; fs.writeFileSync("twa-manifest.json", JSON.stringify(m, null, 2));
+            const path = "twa-manifest.json";
+            if (fs.existsSync(path)) {
+              const manifest = JSON.parse(fs.readFileSync(path, "utf8"));
+              manifest.keyStore = { path: "android.keystore", alias: "android" };
+              fs.writeFileSync(path, JSON.stringify(manifest, null, 2));
+            }
           '
 
-      - name: Generate Android project
-        working-directory: twa
-        run: bubblewrap update --skipVersionUpgrade || bubblewrap init --manifest twa-manifest.json --directory . --skipPwaValidation
-
-      - name: Build unsigned TWA
+      - name: Build TWA APK
         working-directory: twa
         run: bubblewrap build --skipPwaValidation
 
-      - name: Decode keystore
-        if: ${{ env.DAFTARY_KEYSTORE_BASE64 != '' }}
-        working-directory: twa
-        run: echo "${{ env.DAFTARY_KEYSTORE_BASE64 }}" | base64 -d > my-release-key.keystore
-
-      - name: Sign APK
-        if: ${{ env.DAFTARY_KEYSTORE_BASE64 != '' }}
-        working-directory: twa
-        env:
-          KS_PASS: ${{ secrets.DAFTARY_KS_PASS }}
-          KEY_PASS: ${{ secrets.DAFTARY_KEY_PASS }}
-        run: |
-          BUILD_TOOLS="$ANDROID_SDK_ROOT/build-tools/34.0.0"
-          UNSIGNED=$(ls -1 app-release-unsigned.apk app/build/outputs/apk/release/*.apk 2>/dev/null | head -n 1)
-          "$BUILD_TOOLS/zipalign" -f -p 4 "$UNSIGNED" Daftary-aligned.apk
-          "$BUILD_TOOLS/apksigner" sign --ks my-release-key.keystore --ks-key-alias daftary_key \
-            --ks-pass pass:"$KS_PASS" --key-pass pass:"$KEY_PASS" --out Daftary-Final.apk Daftary-aligned.apk
-          rm -f my-release-key.keystore
-
-      - name: Upload signed APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Daftary-Final
-          path: |
-            twa/Daftary-Final.apk
-            twa/app-release-signed.apk
-            twa/*.apk
-          if-no-files-found: warn
+          name: daftary-apk
+          path: twa/*.apk

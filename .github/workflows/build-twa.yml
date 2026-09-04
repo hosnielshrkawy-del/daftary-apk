@@ -72,12 +72,12 @@ jobs:
         run: bubblewrap build --skipPwaValidation
 
       - name: Decode keystore
-        if: ${{ secrets.DAFTARY_KEYSTORE_BASE64 != '' }}
+        if: ${{ env.DAFTARY_KEYSTORE_BASE64 != '' }}
         working-directory: twa
-        run: echo "${{ secrets.DAFTARY_KEYSTORE_BASE64 }}" | base64 -d > my-release-key.keystore
+        run: echo "${{ env.DAFTARY_KEYSTORE_BASE64 }}" | base64 -d > my-release-key.keystore
 
       - name: Sign APK
-        if: ${{ secrets.DAFTARY_KEYSTORE_BASE64 != '' }}
+        if: ${{ env.DAFTARY_KEYSTORE_BASE64 != '' }}
         working-directory: twa
         env:
           KS_PASS: ${{ secrets.DAFTARY_KS_PASS }}

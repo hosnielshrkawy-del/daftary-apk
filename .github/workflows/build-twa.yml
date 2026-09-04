@@ -38,9 +38,10 @@ jobs:
             "androidSdkPath": "$ANDROID_SDK_ROOT"
           }
           EOL
+          echo "=== Bubblewrap Config ==="
           cat \~/.bubblewrap/config.json
-          echo "jdkPath=$JAVA_HOME"
-          echo "androidSdkPath=$ANDROID_SDK_ROOT"
+          echo "JAVA_HOME=$JAVA_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
 
       - name: Generate Keystore and Patch Manifest
         working-directory: twa
@@ -58,10 +59,8 @@ jobs:
 
       - name: Build TWA APK
         working-directory: twa
-        env:
-          BUBBLEWRAP_JDK_PATH: ${{ env.JAVA_HOME }}
         run: |
-          yes n | bubblewrap build --skipPwaValidation || bubblewrap build --skipPwaValidation --noInstallJdk
+          echo "n" | bubblewrap build --skipPwaValidation
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

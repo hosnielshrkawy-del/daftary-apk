@@ -22,8 +22,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Accept Android licenses
-        run: |
-          yes | sdkmanager --licenses || true
+        run: yes | sdkmanager --licenses || true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -33,10 +32,16 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Configure Bubblewrap (non-interactive)
+      - name: Pre-create Bubblewrap config
         run: |
-          bubblewrap updateConfig --jdkPath="$JAVA_HOME" --androidSdkPath="$ANDROID_SDK_ROOT"
-          bubblewrap doctor
+          mkdir -p \~/.bubblewrap
+          cat > \~/.bubblewrap/config.json << EOL
+          {
+            "jdkPath": "$JAVA_HOME",
+            "androidSdkPath": "$ANDROID_SDK_ROOT"
+          }
+          EOL
+          cat \~/.bubblewrap/config.json
 
       - name: Generate Keystore and Patch Manifest
         working-directory: twa
@@ -57,7 +62,9 @@ jobs:
         env:
           BUBBLEWRAP_KEYSTORE_PASSWORD: android
           BUBBLEWRAP_KEY_PASSWORD: android
-        run: bubblewrap build --skipPwaValidation
+        run: |
+          # نرسل إجابات لكل الأسئلة المتوقعة
+          printf "n\n$JAVA_HOME\nn\n$ANDROID_SDK_ROOT\nY\nY\nY\nY\n" | bubblewrap build --skipPwaValidation
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

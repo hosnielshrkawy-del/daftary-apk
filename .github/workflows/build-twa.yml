@@ -60,8 +60,7 @@ jobs:
             m.monochromeIconUrl = origin + "/__grok/icon-192.png";
             m.webManifestUrl = origin + "/__grok/manifest.webmanifest";
             m.fullScopeUrl = origin + "/";
-            m.keyStore = m.keyStore || { path: "android.keystore", alias: "android" };
-        fs.writeFileSync("twa-manifest.json", JSON.stringify(m, null, 2));
+            m.keyStore = m.keyStore || { path: "android.keystore", alias: "android" };; m.keyStore = m.keyStore || { path: "android.keystore", alias: "android" }; fs.writeFileSync("twa-manifest.json", JSON.stringify(m, null, 2));
           '
 
       - name: Generate Android project

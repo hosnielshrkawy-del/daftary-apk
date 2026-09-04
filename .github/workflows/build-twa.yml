@@ -29,11 +29,18 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Configure Bubblewrap Non-Interactive Paths
+      - name: Configure Bubblewrap Non-Interactive
         run: |
           mkdir -p \~/.bubblewrap
-          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_SDK_ROOT\"}" > \~/.bubblewrap/config.json
+          cat > \~/.bubblewrap/config.json << EOL
+          {
+            "jdkPath": "$JAVA_HOME",
+            "androidSdkPath": "$ANDROID_SDK_ROOT"
+          }
+          EOL
           cat \~/.bubblewrap/config.json
+          echo "jdkPath=$JAVA_HOME"
+          echo "androidSdkPath=$ANDROID_SDK_ROOT"
 
       - name: Generate Keystore and Patch Manifest
         working-directory: twa
@@ -51,7 +58,10 @@ jobs:
 
       - name: Build TWA APK
         working-directory: twa
-        run: bubblewrap build --skipPwaValidation
+        env:
+          BUBBLEWRAP_JDK_PATH: ${{ env.JAVA_HOME }}
+        run: |
+          yes n | bubblewrap build --skipPwaValidation || bubblewrap build --skipPwaValidation --noInstallJdk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

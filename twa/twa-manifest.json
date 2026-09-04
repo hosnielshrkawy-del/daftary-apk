@@ -24,7 +24,9 @@
   "webManifestUrl": "https://daftary-apk.vercel.app/__grok/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
-  "alphaDependencies": { "enabled": false },
+  "alphaDependencies": {
+    "enabled": false
+  },
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
@@ -38,5 +40,9 @@
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "fullScopeUrl": "https://daftary-apk.vercel.app/",
-  "protocolHandlers": []
+  "protocolHandlers": [],
+  "keyStore": {
+    "path": "./android.keystore",
+    "alias": "android"
+  }
 }

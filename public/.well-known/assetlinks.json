@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.daftary_apk.twa",
+        "sha256_cert_fingerprints": ["D4:7C:44:D3:C3:FF:6A:96:21:89:DB:B9:E6:30:FC:A0:E4:7B:56:DD:9C:1E:49:B7:B6:93:84:EB:14:FB:33:CD"]
+      }
+    }]

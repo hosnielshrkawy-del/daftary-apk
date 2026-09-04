@@ -1,0 +1,201 @@
+@import "tailwindcss";
+@import "@fontsource/cairo/arabic-400.css";
+@import "@fontsource/cairo/arabic-700.css";
+@import "@fontsource/cairo/arabic-800.css";
+@import "@fontsource/tajawal/arabic-400.css";
+@import "@fontsource/tajawal/arabic-500.css";
+@import "@fontsource/tajawal/arabic-700.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Tajawal", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Cairo", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: #102823;
+  --color-foreground: #f3e9d0;
+  --color-card: #f3ebd4;
+  --color-card-foreground: #1e1a14;
+  --color-primary: #102823;
+  --color-primary-foreground: #f3e9d0;
+  --color-secondary: #e8dfc4;
+  --color-secondary-foreground: #1e1a14;
+  --color-accent: #b08a3a;
+  --color-accent-foreground: #102823;
+  --color-muted: #e8dfc4;
+  --color-muted-foreground: #6e6758;
+  --color-destructive: #9e3d36;
+  --color-destructive-foreground: #f3e9d0;
+  --color-income: #2f6f5e;
+  --color-income-foreground: #f3e9d0;
+  --color-border: #d4c8a4;
+  --color-input: #d4c8a4;
+  --color-ring: #b08a3a;
+  --color-sage: #6d8b74;
+  --color-cover: #102823;
+  --color-paper: #f3ebd4;
+
+  --color-cat-food: #b08a3a;
+  --color-cat-transport: #3f6f62;
+  --color-cat-bills: #9e3d36;
+  --color-cat-shopping: #6b5c7a;
+  --color-cat-health: #2f6f5e;
+  --color-cat-fun: #a46532;
+  --color-cat-education: #3d5f86;
+  --color-cat-other: #7a7466;
+  --color-cat-income: #2f6f5e;
+  --color-cat-savings: #4a6b5c;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.5rem;
+  --radius: 0.75rem;
+
+  --shadow-card: 0 8px 24px rgb(16 40 35 / 0.28);
+
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-quick: 150ms;
+  --motion-fast: 250ms;
+}
+
+.dark {
+  --color-background: #081410;
+  --color-foreground: #ede4cc;
+  --color-card: #16241f;
+  --color-card-foreground: #ede4cc;
+  --color-primary: #c4a35a;
+  --color-primary-foreground: #081410;
+  --color-secondary: #1e3029;
+  --color-secondary-foreground: #ede4cc;
+  --color-accent: #c4a35a;
+  --color-accent-foreground: #081410;
+  --color-muted: #1e3029;
+  --color-muted-foreground: #9daa9f;
+  --color-destructive: #c45b54;
+  --color-destructive-foreground: #ede4cc;
+  --color-income: #4e9a84;
+  --color-income-foreground: #081410;
+  --color-border: #2c4038;
+  --color-input: #2c4038;
+  --color-ring: #c4a35a;
+  --color-sage: #8fa79d;
+  --color-cover: #081410;
+  --color-paper: #16241f;
+  --shadow-card: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100%;
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+.app-cover {
+  background-color: var(--color-background);
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent,
+    transparent 27px,
+    color-mix(in srgb, var(--color-foreground) 6%, transparent) 28px
+  );
+}
+
+.paper-page {
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent,
+    transparent 27px,
+    color-mix(in srgb, var(--color-accent) 18%, transparent) 28px
+  );
+}
+
+.num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.view-enter {
+  animation: viewIn var(--motion-fast) var(--ease-smooth-out);
+}
+
+@keyframes viewIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.heat-cell {
+  transition: transform var(--motion-quick) var(--ease-smooth-out),
+    background-color var(--motion-fast) var(--ease-smooth-out);
+}
+
+.heat-cell:active {
+  transform: scale(0.96);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #1e1a14 !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-enter {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
